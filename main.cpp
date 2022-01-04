@@ -10,20 +10,20 @@ int main()
     emptyTexture.create(w, h);
     sf::Sprite emptySprite = sf::Sprite(emptyTexture.getTexture());
     sf::Shader shader;
-    shader.loadFromFile("OutputShader.frag", sf::Shader::Fragment);
+    shader.loadFromFile("/home/supsun/Documents/4D/shader/OutputShader.frag", sf::Shader::Fragment);
 
     while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
         {
-            sf::Event event;
-            while (window.pollEvent(event))
+            if (event.type == sf::Event::Closed)
             {
-                if (event.type == sf::Event::Closed)
-                {
-                    window.close();
-                }
+                window.close();
             }
-            window.draw(emptySprite, &shader);
-            window.display();
         }
-        return 0;
+        window.draw(emptySprite, &shader);
+        window.display();
+    }
+    return 0;
 }
