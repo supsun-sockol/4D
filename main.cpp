@@ -11,6 +11,7 @@ int main()
     sf::Sprite emptySprite = sf::Sprite(emptyTexture.getTexture());
     sf::Shader shader;
     shader.loadFromFile("/home/supsun/Documents/4D/shader/OutputShader.frag", sf::Shader::Fragment);
+    shader.setUniform("u_resolution", sf::Vector2f(w, h));
 
     while (window.isOpen())
     {
