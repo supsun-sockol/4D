@@ -60,7 +60,8 @@ vec3 castRay(vec3 ro, vec3 rd) {
     }
     if(minIt.x == MAX_DIST) return vec3(0.0);
     vec3 light = normalize(vec3(-1.0, -2.0, -3.0));
-    float diffuse = max(0.0, dot(light, n))+0.1;
+    //float diffuse = max(0.0, dot(light, n))+0.1;
+    float diffuse = (dot(light, n)+1.0)/2.0;
     vec3 col = vec3(diffuse);
     return col;
 }

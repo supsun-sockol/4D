@@ -98,16 +98,6 @@ int main()
         rotmat[2][0] = sin(-rotation.y);
         trans *= rotmat;*/
         dir = trans*dir;
-        //std::cout << dir.x << "\n" << dir.y << "\n" << dir.z << "\n\n";
-
-
-        /*dirTemp.z = dir.z * cos(-rotation.y) - dir.x * sin(-rotation.y);
-        dirTemp.x = dir.z * sin(-rotation.y) + dir.x * cos(-rotation.y);
-        dirTemp.y = dir.y;
-        dir.x = dirTemp.x * cos(rotation.x) - dirTemp.y * sin(rotation.x);
-        dir.y = dirTemp.x * sin(rotation.x) + dirTemp.y * cos(rotation.x);
-        dir.z = dirTemp.z;
-        */
 
         pos+=dir*speed;
 
