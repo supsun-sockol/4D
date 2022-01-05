@@ -1,6 +1,14 @@
 uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform vec3 u_pos;
 
 const float MAX_DIST = 99999.0;
+
+mat2 rot(float a) {
+        float s = sin(a);
+        float c = cos(a);
+        return mat2(c, -s, s, c);
+}
 
 vec3 normalize(vec3 v){
     float h = sqrt(v.x*v.x+v.y*v.y+v.z*v.z);
@@ -60,8 +68,10 @@ vec3 castRay(vec3 ro, vec3 rd) {
 void main() {
     vec2 uv = (gl_TexCoord[0].xy -0.5) * u_resolution / u_resolution.y;
     gl_FragColor = vec4(uv, 0.0, 1.0);
-    vec3 rayOrigin = vec3(-6.0, 0.0, 0.0);
+    vec3 rayOrigin = u_pos;
     vec3 rayDirection = normalize(vec3(1.0, uv));
+    rayDirection.zx *= rot(-u_mouse.y);
+    rayDirection.xy *= rot(-u_mouse.x);
     vec3 col = castRay(rayOrigin, rayDirection);
     gl_FragColor = vec4(col, 1.0);
 }
