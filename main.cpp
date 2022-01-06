@@ -1,6 +1,5 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-//#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -28,7 +27,7 @@ int main()
     sf::Sprite emptySprite = sf::Sprite(emptyTexture.getTexture());
     sf::Shader shader;
     shader.loadFromFile("/home/supsun/Documents/4D/shader/OutputShader.frag", sf::Shader::Fragment);
-    shader.setUniform("u_resolution", sf::Vector2f(w, h));
+
 
     std::string levelFile = "/home/supsun/Documents/4D/levels/1.txt";
     std::ifstream in(levelFile);
@@ -49,20 +48,15 @@ int main()
     in>>finishY;
     in>>finishZ;
 
-    int*** mass = new int**[a];
-    for (int x =0; x<a; x++)
+    float* mass = new float[a*b*c];
+    for (int x =0; x<a*b*c; x++)
     {
-        mass[x]=new int*[b];
-
-        for (int y =0; y<b; y++)
-        {
-            mass[x][y] = new int[c];
-            for (int z =0; z<c; z++)
-            {
-                in >> mass[x][y][z];
-            }
-        }
+        in >> mass[x];
     }
+
+    shader.setUniform("u_resolution", sf::Vector2f(w, h));
+    shader.setUniform("m_size", sf::Vector3f(a, b, c));
+    shader.setUniformArray("mass", mass, a*b*c);
 
 
 
@@ -76,8 +70,6 @@ int main()
                 window.close();
             }
 
-            //cumX += event.mouseMove.x - w / 2;
-            //cumY += event.mouseMove.y - h / 2;
             else if (event.type == sf::Event::KeyPressed)
             {
                 // move
@@ -129,11 +121,6 @@ int main()
         rotmat[0][1] = -sin(rotation.x);
         rotmat[1][0] = sin(rotation.x);
         trans *= rotmat;
-        /*rotmat=glm::mat4(1.0f);
-        rotmat[0][0] = rotmat[2][2] = cos(-rotation.y);
-        rotmat[0][2] = -sin(-rotation.y);
-        rotmat[2][0] = sin(-rotation.y);
-        trans *= rotmat;*/
         dir = trans*dir;
 
         pos+=dir*speed;
