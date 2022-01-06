@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/mat4x4.hpp>
+#include <fstream>
 
 int main()
 {
@@ -28,6 +29,42 @@ int main()
     sf::Shader shader;
     shader.loadFromFile("/home/supsun/Documents/4D/shader/OutputShader.frag", sf::Shader::Fragment);
     shader.setUniform("u_resolution", sf::Vector2f(w, h));
+
+    std::string levelFile = "/home/supsun/Documents/4D/levels/1.txt";
+    std::ifstream in(levelFile);
+    int a, b, c, finishX, finishY, finishZ, startX,  startY, startZ;
+    if (!in.is_open())
+    {
+        return 0;
+
+    }
+
+    in>>a;
+    in>>b;
+    in>>c;
+    in>>startX;
+    in>>startY;
+    in>>startZ;
+    in>>finishX;
+    in>>finishY;
+    in>>finishZ;
+
+    int*** mass = new int**[a];
+    for (int x =0; x<a; x++)
+    {
+        mass[x]=new int*[b];
+
+        for (int y =0; y<b; y++)
+        {
+            mass[x][y] = new int[c];
+            for (int z =0; z<c; z++)
+            {
+                in >> mass[x][y][z];
+            }
+        }
+    }
+
+
 
     while (window.isOpen())
     {
