@@ -14,10 +14,10 @@ int main()
     int cumY = 0;
     float cumSensitivity = 0.03f;
     float speed = 0.1f;
-    bool moveKeys[6] = {false, false, false, false, false, false};
-    bool rotateKeys[12] = {false, false, false, false, false, false, false, false, false, false, false, false};
+    bool moveKeys[8] = {false, false, false, false, false, false, false, false};
+    bool rotateKeys[6] = {false, false, false, false, false, false};
     glm::vec4 pos(-5.0f, 0.0f, 0.0f, 0.0f);
-    sf::Vector2f rotation = sf::Vector2f(0.0, 0.0);
+    sf::Vector3f rotation = sf::Vector3f(0.0, 0.0, 0.0);
 
     sf::RenderWindow window(sf::VideoMode(w, h), "Ray tracing", sf::Style::Titlebar | sf::Style::Close);
     window.setFramerateLimit(60);
@@ -50,11 +50,15 @@ int main()
                 else if (event.key.code == sf::Keyboard::D) moveKeys[3] = true; // right
                 else if (event.key.code == sf::Keyboard::R) moveKeys[4] = true; // up
                 else if (event.key.code == sf::Keyboard::F) moveKeys[5] = true; // down
+                else if (event.key.code == sf::Keyboard::Z) moveKeys[6] = true; // hyper up
+                else if (event.key.code == sf::Keyboard::X) moveKeys[7] = true; // hyper down
                 // rotate
                 else if (event.key.code == sf::Keyboard::Up) rotateKeys[0] = true; // up (xz)
                 else if (event.key.code == sf::Keyboard::Down) rotateKeys[1] = true; // down (xz)
                 else if (event.key.code == sf::Keyboard::Left) rotateKeys[2] = true; // left (xy)
                 else if (event.key.code == sf::Keyboard::Right) rotateKeys[3] = true; // right (xy)
+                else if (event.key.code == sf::Keyboard::RShift) rotateKeys[4] = true; // hyper up (xw)
+                else if (event.key.code == sf::Keyboard::RControl) rotateKeys[5] = true; // hyper down (xw)
 
             }
             else if (event.type == sf::Event::KeyReleased)
@@ -65,10 +69,14 @@ int main()
                 else if (event.key.code == sf::Keyboard::D) moveKeys[3] = false;
                 else if (event.key.code == sf::Keyboard::R) moveKeys[4] = false;
                 else if (event.key.code == sf::Keyboard::F) moveKeys[5] = false;
+                else if (event.key.code == sf::Keyboard::Z) moveKeys[6] = false;
+                else if (event.key.code == sf::Keyboard::X) moveKeys[7] = false;
                 else if (event.key.code == sf::Keyboard::Up) rotateKeys[0] = false;
                 else if (event.key.code == sf::Keyboard::Down) rotateKeys[1] = false;
                 else if (event.key.code == sf::Keyboard::Left) rotateKeys[2] = false;
                 else if (event.key.code == sf::Keyboard::Right) rotateKeys[3] = false;
+                else if (event.key.code == sf::Keyboard::RShift) rotateKeys[4] = false;
+                else if (event.key.code == sf::Keyboard::RControl) rotateKeys[5] = false;
             }
         }
         glm::vec4 dir(0.0f, 0.0f, 0.0f, 0.0f);
@@ -85,6 +93,8 @@ int main()
         else if (moveKeys[1]) dir.y -= 1;
         if (moveKeys[5]) dir.z += 1;
         else if (moveKeys[4]) dir.z -= 1;
+        if (moveKeys[7]) dir.w += 1;
+        else if (moveKeys[6]) dir.w -= 1;
 
         glm::mat4 trans(1.0f);
         glm::mat4 rotmat(1.0f);
@@ -100,10 +110,10 @@ int main()
         dir = trans*dir;
 
         pos+=dir*speed;
-
-
+        sf::Glsl::Vec4 poss;
+        poss = sf::Glsl::Vec4(pos.x, pos.y, pos.z, pos.w);
         shader.setUniform("u_mouse", rotation);
-        shader.setUniform("u_pos", sf::Vector3f(pos.x, pos.y, pos.z));
+        shader.setUniform("u_pos", poss);
         window.draw(emptySprite, &shader);
         window.display();
     }
