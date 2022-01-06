@@ -86,6 +86,8 @@ int main()
         else if (rotateKeys[0]) rotation.y-=1 * cumSensitivity;
         if (rotateKeys[2]) rotation.x+=1 * cumSensitivity;
         else if (rotateKeys[3]) rotation.x-=1 * cumSensitivity;
+        if (rotateKeys[4]) rotation.z+=1 * cumSensitivity;
+        else if (rotateKeys[5]) rotation.z-=1 * cumSensitivity;
 
         if (moveKeys[0]) dir.x += 1;
         else if (moveKeys[2]) dir.x -= 1;
