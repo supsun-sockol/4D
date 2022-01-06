@@ -8,30 +8,10 @@
 
 int main()
 {
-    int w = 800;
-    int h = 600;
-    int cumX = 0;
-    int cumY = 0;
-    float cumSensitivity = 0.03f;
-    float speed = 0.1f;
-    bool moveKeys[6] = {false, false, false, false, false, false};
-    bool rotateKeys[12] = {false, false, false, false, false, false, false, false, false, false, false, false};
-    glm::vec4 pos(-5.0f, 0.0f, 0.0f, 0.0f);
-    sf::Vector2f rotation = sf::Vector2f(0.0, 0.0);
-
-    sf::RenderWindow window(sf::VideoMode(w, h), "Ray tracing", sf::Style::Titlebar | sf::Style::Close);
-    window.setFramerateLimit(60);
-
-    sf::RenderTexture emptyTexture;
-    emptyTexture.create(w, h);
-    sf::Sprite emptySprite = sf::Sprite(emptyTexture.getTexture());
-    sf::Shader shader;
-    shader.loadFromFile("/home/supsun/Documents/4D/shader/OutputShader.frag", sf::Shader::Fragment);
-
-
-    std::string levelFile = "/home/supsun/Documents/4D/levels/1.txt";
+    std::string levelFile = "/home/supsun/Documents/4D/levels/2.txt";
     std::ifstream in(levelFile);
     int a, b, c, finishX, finishY, finishZ, startX,  startY, startZ;
+    float Rad = 3.0;
     if (!in.is_open())
     {
         return 0;
@@ -54,9 +34,37 @@ int main()
         in >> mass[x];
     }
 
+
+
+    int w = 800;
+    int h = 600;
+    int cumX = 0;
+    int cumY = 0;
+    float cumSensitivity = 0.03f;
+    float speed = 0.1f;
+    bool moveKeys[6] = {false, false, false, false, false, false};
+    bool rotateKeys[12] = {false, false, false, false, false, false, false, false, false, false, false, false};
+    glm::vec4 pos(startX, startY, startZ, 0.0f);
+    pos = pos * (2*Rad);
+    sf::Vector2f rotation = sf::Vector2f(0.0, 0.0);
+
+    sf::RenderWindow window(sf::VideoMode(w, h), "Ray tracing", sf::Style::Titlebar | sf::Style::Close);
+    window.setFramerateLimit(60);
+
+    sf::RenderTexture emptyTexture;
+    emptyTexture.create(w, h);
+    sf::Sprite emptySprite = sf::Sprite(emptyTexture.getTexture());
+    sf::Shader shader;
+    shader.loadFromFile("/home/supsun/Documents/4D/shader/OutputShader.frag", sf::Shader::Fragment);
+
     shader.setUniform("u_resolution", sf::Vector2f(w, h));
     shader.setUniform("m_size", sf::Vector3f(a, b, c));
     shader.setUniformArray("mass", mass, a*b*c);
+    shader.setUniform("Rad", Rad);
+    shader.setUniform("sphere", sf::Vector3f(finishX, finishY, finishZ));
+
+
+
 
 
 

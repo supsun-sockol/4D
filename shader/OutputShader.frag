@@ -3,6 +3,8 @@ uniform vec2 u_mouse;
 uniform vec3 u_pos;
 uniform vec3 m_size;
 uniform float mass[27];
+uniform float Rad;
+uniform vec3 sphere;
 
 const float MAX_DIST = 99999.0;
 
@@ -42,39 +44,32 @@ vec2 boxIntersection(in vec3 ro, in vec3 rd, in vec3 rad, out vec3 oN)  {
     return vec2(tN, tF);
 }
 
+float plaIntersect( in vec3 ro, in vec3 rd, in vec4 p )
+{
+    return -(dot(ro,p.xyz)+p.w)/dot(rd,p.xyz);
+}
+
 vec3 castRay(vec3 ro, vec3 rd) {
     vec2 minIt = vec2(MAX_DIST);
     vec2 it;
     vec3 n;
-    vec3 spherePos = vec3(0.0, -1.0, 0.0);
+
+    vec3 spherePos = sphere*Rad*2.0;
+    //spherePos*=2;
     it = sphIntersect(ro - spherePos, rd, 1.0);
     if(it.x > 0.0 && it.x < minIt.x) {
         minIt = it;
         vec3 itPos = ro + rd * it.x;
         n = itPos - spherePos;
     }
+
     vec3 boxN;
     vec3 boxPos;
-    float Rad =3.0;
     vec3 boxRad = vec3(Rad);
-    /*
-    vec3 boxPos = vec3(mass[0], mass[1], mass[2]);
-    //vec3 boxPos = vec3(0.0, 2.0, 0.0);
-
-    it = boxIntersection(ro - boxPos, rd, vec3(1.0), boxN);
-    if(it.x > 0.0 && it.x < minIt.x) {
-        minIt = it;
-        n = boxN;
-    }
-    boxPos = vec3(0.0, 5.0, 0.0);
-    it = boxIntersection(ro - boxPos, rd, vec3(1.0), boxN);
-    if(it.x > 0.0 && it.x < minIt.x) {
-        minIt = it;
-        n = boxN;
-    }*/
     int i=0;
     float a, x, y, z;
     int size = int(m_size.x*m_size.y*m_size.z);
+
     while(i<size){
         a = float(i);
         z = mod(a, m_size.z);
@@ -93,6 +88,48 @@ vec3 castRay(vec3 ro, vec3 rd) {
         }
         i++;
     }
+    float t;
+    boxPos = vec3(5.0)*Rad;
+    vec4 norm = vec4(-1.0, 0.0, 0.0, 0.0);
+    t = plaIntersect(ro - boxPos, rd, norm);
+    if(t > 0.0 && t < minIt.x) {
+        minIt.x = t;
+        n = norm.xyz;
+    }
+    norm = vec4(0.0, -1.0, 0.0, 0.0);
+    t = plaIntersect(ro - boxPos, rd, norm);
+    if(t > 0.0 && t < minIt.x) {
+        minIt.x = t;
+        n = norm.xyz;
+    }
+    norm = vec4(0.0, 0.0, -1.0, 0.0);
+    t = plaIntersect(ro - boxPos, rd, norm);
+    if(t > 0.0 && t < minIt.x) {
+        minIt.x = t;
+        n = norm.xyz;
+    }
+    boxPos = vec3(-1.0)*Rad;
+    norm = vec4(1.0, 0.0, 0.0, 0.0);
+    t = plaIntersect(ro - boxPos, rd, norm);
+    if(t > 0.0 && t < minIt.x) {
+        minIt.x = t;
+        n = norm.xyz;
+    }
+    norm = vec4(0.0, 1.0, 0.0, 0.0);
+    t = plaIntersect(ro - boxPos, rd, norm);
+    if(t > 0.0 && t < minIt.x) {
+        minIt.x = t;
+        n = norm.xyz;
+    }
+    norm = vec4(0.0, 0.0, 1.0, 0.0);
+    t = plaIntersect(ro - boxPos, rd, norm);
+    if(t > 0.0 && t < minIt.x) {
+        minIt.x = t;
+        n = norm.xyz;
+    }
+
+
+
     if(minIt.x == MAX_DIST) return vec3(0.0);
     vec3 light = normalize(vec3(-1.0, -2.0, -3.0));
     float diffuse = ((dot(light, n)+1.0)/2.0)*0.7;
