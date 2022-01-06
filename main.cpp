@@ -132,11 +132,9 @@ int main()
         dir = trans*dir;
         glm::vec4 newpos;
         newpos=pos + dir*speed;
-        //std::cout << newpos.x/(2*Rad) << "\n";
         int x = floor(newpos.x/(2*Rad)+0.5);
         int y = floor(newpos.y/(2*Rad)+0.5);
         int z = floor(newpos.z/(2*Rad)+0.5);
-        std::cout << x << y << z << "\n";
 
         if (x>=0 and x<3 and y>=0 and y<3 and z>=0 and z<3){
             if (mass[x*b*c+y*c+z]==0){
