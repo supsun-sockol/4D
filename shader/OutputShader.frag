@@ -27,19 +27,21 @@ vec2 sphIntersect(in vec4 ro, in vec4 rd, float ra) {
     h = sqrt(h);
     return vec2(-b - h, -b + h);
 }
-
-/*vec2 boxIntersection(in vec4 ro, in vec4 rd, in vec4 rad, out vec4 oN)  {
+float plain(in vec4 ro, in vec4 rd, in vec4 n){
+    return -dot(ro, n)/dot(rd, n);
+}
+vec2 boxIntersection(in vec4 ro, in vec4 rd, in vec4 rad, out vec4 oN)  {
     vec4 m = 1.0 / rd;
     vec4 n = m * ro;
     vec4 k = abs(m) * rad;
-    vec3 t1 = -n - k;
-    vec3 t2 = -n + k;
-    float tN = max(max(t1.x, t1.y), t1.z);
-    float tF = min(min(t2.x, t2.y), t2.z);
+    vec4 t1 = -n - k;
+    vec4 t2 = -n + k;
+    float tN = max(max(max(t1.x, t1.y), t1.z), t1.w);
+    float tF = min(min(min(t2.x, t2.y), t2.z), t2.w);
     if(tN > tF || tF < 0.0) return vec2(-1.0);
-    oN = -sign(rd) * step(t1.yzx, t1.xyz) * step(t1.zxy, t1.xyz);
+    oN = -sign(rd) * step(t1.yzxw, t1.xyzw) * step(t1.zxyw, t1.xyzw);
     return vec2(tN, tF);
-}*/
+}
 
 vec3 castRay(vec4 ro, vec4 rd) {
     vec2 minIt = vec2(MAX_DIST);
@@ -52,13 +54,19 @@ vec3 castRay(vec4 ro, vec4 rd) {
         vec4 itPos = ro + rd * it.x;
         n = itPos - spherePos;
     }
-    /*
-    vec3 boxN;
-    vec3 boxPos = vec3(0.0, 2.0, 0.0);
-    it = boxIntersection(ro - boxPos, rd, vec3(1.0), boxN);
+
+    vec4 boxN;
+
+    vec4 boxPos = vec4(0.0, 2.0, 0.0, 0.0);
+    it = boxIntersection(ro - boxPos, rd, vec4(1.0), boxN);
     if(it.x > 0.0 && it.x < minIt.x) {
         minIt = it;
         n = boxN;
+    }
+    /*it.x = plain(ro - boxPos, rd, vec4(1.0, 0.0, 0.0, 0.0));
+    if(it.x > 0.0 && it.x < minIt.x) {
+        minIt = it;
+        n = vec4(-1.0, 0.0, 0.0, 0.0);
     }*/
     if(minIt.x == MAX_DIST) return vec3(0.0);
     vec4 light = normalize(vec4(-1.0, -2.0, -3.0, -4.0));
@@ -74,7 +82,7 @@ void main() {
     vec4 rayDirection = normalize(vec4(1.0, uv, 0.0));
     rayDirection.zx *= rot(-u_mouse.y);
     rayDirection.xy *= rot(-u_mouse.x);
-    rayDirection.xw *= rot(-u_mouse.z);
+    rayDirection.wx *= rot(-u_mouse.z);
     vec3 col = castRay(rayOrigin, rayDirection);
     gl_FragColor = vec4(col, 1.0);
 }
