@@ -1,6 +1,8 @@
 uniform vec2 u_resolution;
-uniform vec2 u_mouse;
 uniform vec3 u_pos;
+uniform vec3 u_dir;
+uniform vec3 Rdir;
+uniform vec3 Tdir;
 uniform vec3 m_size;
 uniform float mass[27];
 uniform float Rad;
@@ -139,11 +141,12 @@ vec3 castRay(vec3 ro, vec3 rd) {
 
 void main() {
     vec2 uv = (gl_TexCoord[0].xy -0.5) * u_resolution / u_resolution.y;
-    gl_FragColor = vec4(uv, 0.0, 1.0);
     vec3 rayOrigin = u_pos;
-    vec3 rayDirection = normalize(vec3(1.0, uv));
-    rayDirection.zx *= rot(-u_mouse.y);
-    rayDirection.xy *= rot(-u_mouse.x);
+    vec3 rayDirection = u_dir;
+    float angle = 1.0;
+    rayDirection+=uv.x*Rdir*angle;
+    rayDirection+=uv.y*Tdir*angle;
+    rayDirection=normalize(rayDirection);
     vec3 col = castRay(rayOrigin, rayDirection);
     gl_FragColor = vec4(col, 1.0);
 }
