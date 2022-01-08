@@ -1,10 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-//#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/mat4x4.hpp>
+#include <fstream>
 
 glm::vec4 ort(glm::vec4 f, glm::vec4 a, glm::vec4 b, glm::vec4 c){
     return f-(glm::dot(f, a)/glm::dot(a, a))*a
@@ -14,6 +14,34 @@ glm::vec4 ort(glm::vec4 f, glm::vec4 a, glm::vec4 b, glm::vec4 c){
 
 int main()
 {
+    std::string levelFile = "/home/supsun/Documents/4D/levels/2.txt";
+    std::ifstream in(levelFile);
+    int a, b, c, finishX, finishY, finishZ, startX,  startY, startZ;
+    float Rad = 3.0;
+    if (!in.is_open())
+    {
+        return 0;
+
+    }
+
+    in>>a;
+    in>>b;
+    in>>c;
+    in>>startX;
+    in>>startY;
+    in>>startZ;
+    in>>finishX;
+    in>>finishY;
+    in>>finishZ;
+
+    float* mass = new float[a*b*c];
+    for (int x =0; x<a*b*c; x++)
+    {
+        in >> mass[x];
+    }
+
+
+
     int w = 800;
     int h = 600;
     int cumX = 0;
@@ -22,11 +50,12 @@ int main()
     float speed = 0.1f;
     bool moveKeys[8] = {false, false, false, false, false, false, false, false};
     bool rotateKeys[12] = {false, false, false, false, false, false, false, false, false, false, false, false};
-    glm::vec4 pos(-5.0f, 0.0f, 0.0f, 0.0f);
     glm::vec4 dir(1.0f, 0.0f, 0.0f, 0.0f);
     glm::vec4 Rdir(0.0f, 1.0f, 0.0f, 0.0f);
     glm::vec4 Tdir(0.0f, 0.0f, 1.0f, 0.0f);
     glm::vec4 Hdir(0.0f, 0.0f, 0.0f, 1.0f);
+    glm::vec4 pos(startX, startY, startZ, 0.0f);
+    pos = pos * (2*Rad);
 
     sf::RenderWindow window(sf::VideoMode(w, h), "Ray tracing", sf::Style::Titlebar | sf::Style::Close);
     window.setFramerateLimit(60);
@@ -36,7 +65,17 @@ int main()
     sf::Sprite emptySprite = sf::Sprite(emptyTexture.getTexture());
     sf::Shader shader;
     shader.loadFromFile("/home/supsun/Documents/4D/OutputShader.frag", sf::Shader::Fragment);
+
     shader.setUniform("u_resolution", sf::Vector2f(w, h));
+    shader.setUniform("m_size", sf::Vector3f(a, b, c));
+    shader.setUniformArray("mass", mass, a*b*c);
+    shader.setUniform("Rad", Rad);
+    shader.setUniform("sphere", sf::Vector3f(finishX, finishY, finishZ));
+
+
+
+
+
 
     while (window.isOpen())
     {
@@ -118,6 +157,10 @@ int main()
             Tdir-=Rdir * cumSensitivity;
             Tdir = glm::normalize(Tdir);
             Rdir = ort(Rdir, dir, Tdir, Hdir);
+        int x = floor(newpos.x/(2*Rad)+0.5);
+        int y = floor(newpos.y/(2*Rad)+0.5);
+        int z = floor(newpos.z/(2*Rad)+0.5);
+
         }
 
         if (moveKeys[0]) move += dir;
@@ -127,7 +170,11 @@ int main()
         if (moveKeys[5]) move += Tdir;
         else if (moveKeys[4]) move -= Tdir;
 
-        pos+=move*speed;
+        newpos=pos+move*speed;
+        if (x>=0 and x<3 and y>=0 and y<3 and z>=0 and z<3){
+            if (mass[x*b*c+y*c+z]==0){
+                pos = newpos;
+            }
 
         shader.setUniform("u_pos", sf::Vector3f(pos.x, pos.y, pos.z));
         shader.setUniform("u_dir", sf::Vector3f(dir.x, dir.y, dir.z));
