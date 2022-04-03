@@ -9,8 +9,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(SFML COMPONENTS graphics CONFIG REQUIRED)
 
-#add_library(shader/OutputShader.frag)
-
 add_executable(4D main.cpp)
 
 

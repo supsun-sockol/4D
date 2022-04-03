@@ -21,12 +21,13 @@ glm::vec4 ort(glm::vec4 f, glm::vec4 a, glm::vec4 b, glm::vec4 c){
 
 int main()
 {
-    std::string levelFile = "/home/supsun/Documents/4D/levels/2.txt";
+    std::string levelFile = "../../levels/0.txt";
     std::ifstream in(levelFile);
     int a, b, c, finishX, finishY, finishZ, startX,  startY, startZ;
     float Rad = 3.0;
     if (!in.is_open())
     {
+        std::cout << "нет файлов уровней\n";
         return 0;
 
     }
@@ -71,7 +72,7 @@ int main()
     emptyTexture.create(w, h);
     sf::Sprite emptySprite = sf::Sprite(emptyTexture.getTexture());
     sf::Shader shader;
-    shader.loadFromFile("/home/supsun/Documents/4D/OutputShader.frag", sf::Shader::Fragment);
+    shader.loadFromFile("../../OutputShader.frag", sf::Shader::Fragment);
 
     shader.setUniform("u_resolution", sf::Vector2f(w, h));
     shader.setUniform("m_size", sf::Vector3f(a, b, c));
@@ -94,8 +95,7 @@ int main()
                 window.close();
             }
 
-            //cumX += event.mouseMove.x - w / 2;
-            //cumY += event.mouseMove.y - h / 2;
+
             else if (event.type == sf::Event::KeyPressed)
             {
                 // move
@@ -108,10 +108,12 @@ int main()
                 else if (event.key.code == sf::Keyboard::Z) moveKeys[6] = true; // hyper up
                 else if (event.key.code == sf::Keyboard::X) moveKeys[7] = true; // hyper down
                 // rotate
-                else if (event.key.code == sf::Keyboard::Up) rotateKeys[0] = true; // up (xz)
-                else if (event.key.code == sf::Keyboard::Down) rotateKeys[1] = true; // down (xz)
-                else if (event.key.code == sf::Keyboard::Left) rotateKeys[2] = true; // left (xy)
-                else if (event.key.code == sf::Keyboard::Right) rotateKeys[3] = true; // right (xy)
+                else if (event.key.code == sf::Keyboard::O) rotateKeys[0] = true; // up (xz)
+                else if (event.key.code == sf::Keyboard::L) rotateKeys[1] = true; // down (xz)
+                else if (event.key.code == sf::Keyboard::K) rotateKeys[2] = true; // left (xy)
+                else if (event.key.code == sf::Keyboard::Semicolon) rotateKeys[3] = true; // right (xy)
+                else if (event.key.code == sf::Keyboard::I) rotateKeys[4] = true; // left (yz)
+                else if (event.key.code == sf::Keyboard::P) rotateKeys[5] = true; // right (yz)
                 else if (event.key.code == sf::Keyboard::RShift) rotateKeys[4] = true; // hyper up (xw)
                 else if (event.key.code == sf::Keyboard::RControl) rotateKeys[5] = true; // hyper down (xw)
 
@@ -126,23 +128,20 @@ int main()
                 else if (event.key.code == sf::Keyboard::F) moveKeys[5] = false;
                 else if (event.key.code == sf::Keyboard::Z) moveKeys[6] = false;
                 else if (event.key.code == sf::Keyboard::X) moveKeys[7] = false;
-                else if (event.key.code == sf::Keyboard::Up) rotateKeys[0] = false;
-                else if (event.key.code == sf::Keyboard::Down) rotateKeys[1] = false;
-                else if (event.key.code == sf::Keyboard::Left) rotateKeys[2] = false;
-                else if (event.key.code == sf::Keyboard::Right) rotateKeys[3] = false;
+
+                else if (event.key.code == sf::Keyboard::O) rotateKeys[0] = false; // up (xz)
+                else if (event.key.code == sf::Keyboard::L) rotateKeys[1] = false; // down (xz)
+                else if (event.key.code == sf::Keyboard::K) rotateKeys[2] = false; // left (xy)
+                else if (event.key.code == sf::Keyboard::Semicolon) rotateKeys[3] = false; // right (xy)
+                else if (event.key.code == sf::Keyboard::I) rotateKeys[4] = false; // left (yz)
+                else if (event.key.code == sf::Keyboard::P) rotateKeys[5] = false; // right (yz)
                 else if (event.key.code == sf::Keyboard::RShift) rotateKeys[4] = false;
                 else if (event.key.code == sf::Keyboard::RControl) rotateKeys[5] = false;
             }
         }
         glm::vec4 move(0.0f, 0.0f, 0.0f, 0.0f);
         sf::Vector3f dirTemp;
-        /*
 
-        if (rotateKeys[1]) rotation.y+=1 * cumSensitivity;
-        else if (rotateKeys[0]) rotation.y-=1 * cumSensitivity;
-        if (rotateKeys[2]) rotation.x+=1 * cumSensitivity;
-        else if (rotateKeys[3]) rotation.x-=1 * cumSensitivity;
-        */
         if (rotateKeys[1]){
             dir+=Tdir * cumSensitivity;
             dir = glm::normalize(dir);
@@ -166,42 +165,36 @@ int main()
             Rdir = ort(Rdir, dir, Tdir, Hdir);
         }
 
+        if (rotateKeys[4]){
+            Tdir+=Rdir * cumSensitivity;
+            Tdir = glm::normalize(Tdir);
+            Rdir = ort(Rdir, dir, Tdir, Hdir);
         }
         else if (rotateKeys[5]){
             Tdir-=Rdir * cumSensitivity;
             Tdir = glm::normalize(Tdir);
             Rdir = ort(Rdir, dir, Tdir, Hdir);
-        int x = floor(newpos.x/(2*Rad)+0.5);
-        int y = floor(newpos.y/(2*Rad)+0.5);
-        int z = floor(newpos.z/(2*Rad)+0.5);
+
 
         }
 
-        if (moveKeys[0]) move.x += 1;
-        else if (moveKeys[2]) move.x -= 1;
-        if (moveKeys[3]) move.y += 1;
-        else if (moveKeys[1]) move.y -= 1;
-        if (moveKeys[5]) move.z += 1;
-        else if (moveKeys[4]) move.z -= 1;
+        if (moveKeys[0]) move += dir;
+        else if (moveKeys[2]) move -= dir;
+        if (moveKeys[3]) move += Rdir;
+        else if (moveKeys[1]) move -= Rdir;
+        if (moveKeys[5]) move += Tdir;
+        else if (moveKeys[4]) move -= Tdir;
 
-        /*glm::mat4 trans(1.0f);
-        glm::mat4 rotmat(1.0f);
-        rotmat[0][0] = rotmat[1][1] = cos(rotation.x);
-        rotmat[0][1] = -sin(rotation.x);
-        rotmat[1][0] = sin(rotation.x);
-        trans *= rotmat;
-        rotmat=glm::mat4(1.0f);
-        rotmat[0][0] = rotmat[2][2] = cos(-rotation.y);
-        rotmat[0][2] = -sin(-rotation.y);
-        rotmat[2][0] = sin(-rotation.y);
-        trans *= rotmat;
-        move = trans*move;*/
 
-        newpos=pos+move*speed;
+        glm::vec4 newpos=pos+move*speed;
+        int x = floor(newpos.x/(2*Rad)+0.5);
+        int y = floor(newpos.y/(2*Rad)+0.5);
+        int z = floor(newpos.z/(2*Rad)+0.5);
         if (x>=0 and x<3 and y>=0 and y<3 and z>=0 and z<3){
             if (mass[x*b*c+y*c+z]==0){
                 pos = newpos;
             }
+        }
 
 
 

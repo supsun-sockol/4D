@@ -1,0 +1,3 @@
+/home/supsun/Documents/projects/4D/build/Debug/CMakeFiles/4D.dir
+/home/supsun/Documents/projects/4D/build/Debug/CMakeFiles/edit_cache.dir
+/home/supsun/Documents/projects/4D/build/Debug/CMakeFiles/rebuild_cache.dir

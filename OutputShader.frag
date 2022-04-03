@@ -8,7 +8,7 @@ uniform float mass[27];
 uniform float Rad;
 uniform vec3 sphere;
 
-const float MAX_DIST = 99999.0;
+const float MAX_DIST = 10.0;
 
 mat2 rot(float a) {
         float s = sin(a);
@@ -132,10 +132,12 @@ vec3 castRay(vec3 ro, vec3 rd) {
 
 
 
-    if(minIt.x == MAX_DIST) return vec3(0.0);
+
     vec3 light = normalize(vec3(-1.0, -2.0, -3.0));
     float diffuse = ((dot(light, n)+1.0)/2.0)*0.7;
-    vec3 col = vec3(diffuse);
+    diffuse*=(max(0.0, 1.0-minIt.x/MAX_DIST)); //туман
+    //diffuse = 1.0-diffuse; //белый
+    vec3 col = vec3(diffuse); //, 0.0, 0.0);
     return col;
 }
 
